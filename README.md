@@ -15,7 +15,10 @@ with `POST /api/display/direct` (it drives the screen while Push3 is stopped).
 Install **Mixxx Mode** from Push Hack Catalog. The download is large because
 Mixxx and the libraries it needs come with it. Nothing is installed outside
 `/data/push-hack/hacks/mixxx/`. Updates keep your Mixxx library and settings
-(`settings/` in that folder).
+(`settings/` in that folder). **Remove** in the catalog deletes that whole folder,
+including your library, playlists, cue points and audio settings. To keep
+them, copy `settings/` somewhere else first. The music copied from USB sticks
+(`/data/Music/DJ/USB/`) stays.
 
 ## Switching
 
