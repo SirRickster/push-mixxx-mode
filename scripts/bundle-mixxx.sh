@@ -43,4 +43,26 @@ export __EGL_VENDOR_LIBRARY_DIRS="$D/share/glvnd/egl_vendor.d" DISPLAY="${DISPLA
 exec /lib/ld-linux-x86-64.so.2 "$D/bin/mixxx" --resource-path "$D/share/mixxx/" --settings-path "${MIXXX_SETTINGS:-/data/push-hack/hacks/mixxx/settings}/" "$@"
 SH
 chmod +x $B/mixxx.sh
+# licenses: every bundled file comes from a jammy / mixxx ppa package. ship
+# each package's copyright file and a list with versions + source links.
+L=$B/share/licenses; mkdir -p $L
+find $B/bin $B/lib $B/plugins -type f | while read f; do dpkg -S "*/$(basename "$f")" 2>/dev/null | head -1 | cut -d: -f1; done | sort -u > /tmp/pkgs
+while read p; do
+  cp /usr/share/doc/$p/copyright $L/$p.copyright 2>/dev/null || echo "no copyright file: $p" >&2
+  dpkg-query -W -f='${binary:Package} ${Version} ${source:Package} ${source:Version}\n' $p
+done < /tmp/pkgs > $L/PACKAGES.txt
+cat > $L/README <<'TXT'
+The libraries and plugins in lib/, plugins/ and bin/ come unchanged from
+Ubuntu 22.04 (jammy) packages, except bin/mixxx, which is Mixxx 2.5.6 from the
+Mixxx PPA built with the patches in this hack's repository. PACKAGES.txt lists
+each binary package, its version, and the source package it was built from.
+The <package>.copyright files are each package's license terms.
+
+Source code: every package's source is at
+https://launchpad.net/ubuntu/+source/<source package>/<source version>
+(Mixxx: the mixxx-source.tar.gz attached to this hack's GitHub release). If
+you cannot get it there, open an issue at
+https://github.com/itsrave/push-mixxx-mode and we will send it to you.
+TXT
+echo "licenses: $(wc -l < $L/PACKAGES.txt) packages"
 dpkg -s mixxx | grep ^Version; du -sh $B $B/lib $B/lib/dri $B/share/mixxx
