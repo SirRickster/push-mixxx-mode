@@ -1,0 +1,14 @@
+<!DOCTYPE template>
+<!-- 4 EQ-mode encoder labels for one deck, 480 x 10. vars: i (deck), color -->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>480f,10f</Size>
+    <Children>
+      <Template src="skin:enc.xml"><SetVariable name="text">HIGH</SetVariable><SetVariable name="key">[EqualizerRack1_[Channel<Variable name="i"/>]_Effect1],parameter3</SetVariable><SetVariable name="unipolar">false</SetVariable><SetVariable name="axis">0.5</SetVariable></Template>
+      <Template src="skin:enc.xml"><SetVariable name="text">MID</SetVariable><SetVariable name="key">[EqualizerRack1_[Channel<Variable name="i"/>]_Effect1],parameter2</SetVariable><SetVariable name="unipolar">false</SetVariable><SetVariable name="axis">0.5</SetVariable></Template>
+      <Template src="skin:enc.xml"><SetVariable name="text">LOW</SetVariable><SetVariable name="key">[EqualizerRack1_[Channel<Variable name="i"/>]_Effect1],parameter1</SetVariable><SetVariable name="unipolar">false</SetVariable><SetVariable name="axis">0.5</SetVariable></Template>
+      <Template src="skin:enc.xml"><SetVariable name="text">FILTER</SetVariable><SetVariable name="key">[QuickEffectRack1_[Channel<Variable name="i"/>]],super1</SetVariable><SetVariable name="unipolar">false</SetVariable><SetVariable name="axis">0.5</SetVariable></Template>
+    </Children>
+  </WidgetGroup>
+</Template>

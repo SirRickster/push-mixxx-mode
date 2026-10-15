@@ -1,0 +1,28 @@
+<!DOCTYPE template>
+<!-- encoder position bar under a label, 120 x 2. vars: key, color (deck
+     color), unipolar + axis (EQ/filter: false + 0.5 = grows from center;
+     FX: true + 0 = from left) -->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>120f,2f</Size>
+    <Children>
+      <WidgetGroup><Size>14f,2f</Size></WidgetGroup>
+      <SliderComposed>
+        <ObjectName>EncBar</ObjectName>
+        <Size>92f,2f</Size>
+        <Horizontal>true</Horizontal>
+        <Handle>skin:handle.svg</Handle>
+        <BarColor><Variable name="color"/></BarColor>
+        <BarBgColor>#262626</BarBgColor>
+        <BarWidth>2</BarWidth>
+        <BarUnipolar><Variable name="unipolar"/></BarUnipolar>
+        <BarAxisPos><Variable name="axis"/></BarAxisPos>
+        <Connection>
+          <ConfigKey><Variable name="key"/></ConfigKey>
+        </Connection>
+      </SliderComposed>
+      <WidgetGroup><Size>14f,2f</Size></WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

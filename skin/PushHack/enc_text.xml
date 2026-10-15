@@ -1,0 +1,10 @@
+<!DOCTYPE template>
+<!-- one encoder, label only (no position to show), 120 px. vars: text -->
+<Template>
+  <Label>
+    <ObjectName>Enc</ObjectName>
+    <Size>120f,10f</Size>
+    <Text><Variable name="text"/></Text>
+    <Alignment>center</Alignment>
+  </Label>
+</Template>

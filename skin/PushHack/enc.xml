@@ -1,0 +1,17 @@
+<!DOCTYPE template>
+<!-- one encoder: label + position bar, 120 px. vars: text + bar.xml's -->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Size>120f,10f</Size>
+    <Children>
+      <Label>
+        <ObjectName>Enc</ObjectName>
+        <Size>120f,8f</Size>
+        <Text><Variable name="text"/></Text>
+        <Alignment>center</Alignment>
+      </Label>
+      <Template src="skin:bar.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

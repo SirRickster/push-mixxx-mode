@@ -1,0 +1,16 @@
+<!DOCTYPE template>
+<!-- GAIN-mode labels for one deck, 480 x 10: encoder 1 = deck gain (trim),
+     button above encoder 2 = AUTO (ReplayGain, all decks), lit while on.
+     vars: i (deck), color -->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>480f,10f</Size>
+    <Children>
+      <Template src="skin:enc.xml"><SetVariable name="text">GAIN</SetVariable><SetVariable name="key">[Channel<Variable name="i"/>],pregain</SetVariable><SetVariable name="unipolar">false</SetVariable><SetVariable name="axis">0.5</SetVariable></Template>
+      <Template src="skin:slot.xml"><SetVariable name="text">AUTO</SetVariable><SetVariable name="key">[ReplayGain],ReplayGainEnabled</SetVariable><SetVariable name="value">1</SetVariable></Template>
+      <Template src="skin:slot_blank.xml"/>
+      <Template src="skin:slot_blank.xml"/>
+    </Children>
+  </WidgetGroup>
+</Template>

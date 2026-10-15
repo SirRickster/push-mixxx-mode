@@ -1,0 +1,60 @@
+<!DOCTYPE template>
+<!-- compact info line for a half-width deck (side by side): number, title,
+     bpm, time, master, sync. vars: i (deck number) -->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>InfoRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>1me,12f</Size>
+    <Children>
+      <Label>
+        <ObjectName>DeckNum<Variable name="i"/></ObjectName>
+        <Size>20f,12f</Size>
+        <Text><Variable name="i"/></Text>
+        <Alignment>center</Alignment>
+        <Connection><ConfigKey>[PushHack],active<Variable name="i"/></ConfigKey><BindProperty>highlight</BindProperty></Connection>
+      </Label>
+      <!-- title over the deck level (level.xml). a stacked layout lowers each
+           child it adds, so the first child is on top: title first -->
+      <WidgetGroup>
+        <ObjectName>TitleArea</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>1me,12f</Size>
+        <Children>
+          <TrackProperty>
+            <ObjectName>Title</ObjectName>
+            <Size>1me,12f</Size>
+            <Property>titleInfo</Property>
+            <Group><Variable name="group"/></Group>
+            <Elide>right</Elide>
+          </TrackProperty>
+          <Template src="skin:level.xml"/>
+        </Children>
+      </WidgetGroup>
+      <NumberBpm>
+        <ObjectName>Bpm</ObjectName>
+        <Size>60f,12f</Size>
+        <Group><Variable name="group"/></Group>
+        <Connection><ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey></Connection>
+      </NumberBpm>
+      <NumberPos>
+        <ObjectName>Time</ObjectName>
+        <Size>120f,12f</Size>
+        <Group><Variable name="group"/></Group>
+      </NumberPos>
+      <Label>
+        <ObjectName>Flag</ObjectName>
+        <Size>50f,12f</Size>
+        <Text>MASTER</Text>
+        <Alignment>center</Alignment>
+        <Connection>
+          <ConfigKey>[PushHack],master</ConfigKey>
+          <Transform><IsEqual><Variable name="i"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </Label>
+      <Template src="skin:flag.xml"><SetVariable name="text">SYNC</SetVariable><SetVariable name="id">Sync</SetVariable><SetVariable name="key"><Variable name="group"/>,sync_enabled</SetVariable></Template>
+    </Children>
+  </WidgetGroup>
+</Template>

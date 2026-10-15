@@ -1,0 +1,154 @@
+diff -ruN a/src/library/library.cpp b/src/library/library.cpp
+--- a/src/library/library.cpp	2026-10-15 14:24:46
++++ b/src/library/library.cpp	2026-10-15 14:25:50
+@@ -2,6 +2,9 @@
+ 
+ #include <QApplication>
+ #include <QDir>
++#include <QFileSystemWatcher>
++#include <QJsonArray>
++#include <QJsonDocument>
+ #include <QMessageBox>
+ 
+ #include "control/controlobject.h"
+@@ -257,6 +260,29 @@
+     m_editMetadataSelectedClick = m_pConfig->getValue(
+             kEditMetadataSelectedClickConfigKey,
+             kEditMetadataSelectedClickDefault);
++
++    // push-hack: mixxx-bridge copies imported Rekordbox tracks to the Push,
++    // then drops [[old, new], ...] into import-ready.json in the settings
++    // dir. repoint those tracks right away instead of on the next start.
++    const QString settingsPath = m_pConfig->getSettingsPath();
++    auto* pImportWatcher = new QFileSystemWatcher(QStringList{settingsPath}, this);
++    connect(pImportWatcher,
++            &QFileSystemWatcher::directoryChanged,
++            this,
++            [this, readyPath = QDir(settingsPath).filePath(QStringLiteral("import-ready.json"))] {
++                QFile file(readyPath);
++                if (!file.open(QIODevice::ReadOnly)) {
++                    return;
++                }
++                const QJsonArray pairs = QJsonDocument::fromJson(file.readAll()).array();
++                file.remove();
++                QList<QPair<QString, QString>> moves;
++                for (const auto& pair : pairs) {
++                    const QJsonArray p = pair.toArray();
++                    moves.append({p.at(0).toString(), p.at(1).toString()});
++                }
++                m_pTrackCollectionManager->internalCollection()->relocateTracks(moves);
++            });
+ }
+ 
+ Library::~Library() = default;
+diff -ruN a/src/library/trackcollection.cpp b/src/library/trackcollection.cpp
+--- a/src/library/trackcollection.cpp	2026-10-15 14:24:46
++++ b/src/library/trackcollection.cpp	2026-10-15 15:34:27
+@@ -215,6 +215,91 @@
+     return result;
+ }
+ 
++void TrackCollection::relocateTracks(const QList<QPair<QString, QString>>& moves) {
++    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
++    SqlTransaction transaction(m_database);
++    QSqlQuery known(m_database);
++    known.prepare(QStringLiteral("SELECT 1 FROM track_locations WHERE location=:loc"));
++    QSqlQuery find(m_database);
++    find.prepare(QStringLiteral(
++            "SELECT library.id,track_locations.id FROM library INNER JOIN "
++            "track_locations ON track_locations.id=library.location "
++            "WHERE track_locations.location=:loc"));
++    QSqlQuery update(m_database);
++    update.prepare(QStringLiteral(
++            "UPDATE track_locations SET location=:loc,directory=:dir,"
++            "filename=:file,fs_deleted=0,needs_verification=0 WHERE id=:id"));
++    QList<RelocatedTrack> relocatedTracks;
++    QList<std::pair<TrackId, TrackId>> merges; // duplicate -> track at the copy
++    for (const auto& [oldLocation, newLocation] : moves) {
++        const mixxx::FileInfo newFile(newLocation);
++        if (!newFile.exists()) {
++            continue;
++        }
++        // a track in two imported playlists: the first import moved it to
++        // the copy, so the second import added it again at the stick path.
++        // merge that duplicate into the track at the copy.
++        find.bindValue(QStringLiteral(":loc"), newFile.location());
++        if (find.exec() && find.next()) {
++            const TrackId keepId(find.value(0));
++            find.bindValue(QStringLiteral(":loc"), oldLocation);
++            if (find.exec() && find.next() && TrackId(find.value(0)) != keepId) {
++                merges.append({TrackId(find.value(0)), keepId});
++            }
++            continue;
++        }
++        known.bindValue(QStringLiteral(":loc"), newFile.location());
++        if (!known.exec() || known.next()) {
++            continue; // already in the library at the new place
++        }
++        find.bindValue(QStringLiteral(":loc"), oldLocation);
++        if (!find.exec() || !find.next()) {
++            continue;
++        }
++        const TrackId trackId(find.value(0));
++        update.bindValue(QStringLiteral(":loc"), newFile.location());
++        update.bindValue(QStringLiteral(":dir"), newFile.locationPath());
++        update.bindValue(QStringLiteral(":file"), newFile.fileName());
++        update.bindValue(QStringLiteral(":id"), find.value(1));
++        if (!update.exec()) {
++            kLogger.warning() << "push-hack: could not relocate" << oldLocation;
++            continue;
++        }
++        relocatedTracks.append(RelocatedTrack(
++                TrackRef::fromFilePath(oldLocation, trackId),
++                TrackRef::fromFileInfo(newFile)));
++    }
++    transaction.commit();
++    if (!relocatedTracks.isEmpty()) {
++        kLogger.info() << "push-hack: relocated" << relocatedTracks.size() << "imported tracks";
++        m_trackDao.slotDatabaseTracksRelocated(std::move(relocatedTracks));
++        GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
++    }
++    if (merges.isEmpty()) {
++        return;
++    }
++    // put the kept track where the duplicate is in each playlist, then purge
++    // the duplicate (its own transaction, playlists and crates included).
++    QSqlQuery position(m_database);
++    position.prepare(QStringLiteral(
++            "SELECT position FROM PlaylistTracks WHERE playlist_id=:pl AND track_id=:id"));
++    QList<TrackId> duplicates;
++    for (const auto& [dupId, keepId] : merges) {
++        QSet<int> playlists;
++        m_playlistDao.getPlaylistsTrackIsIn(dupId, &playlists);
++        for (const int playlistId : std::as_const(playlists)) {
++            position.bindValue(QStringLiteral(":pl"), playlistId);
++            position.bindValue(QStringLiteral(":id"), dupId.toVariant());
++            if (position.exec() && position.next()) {
++                m_playlistDao.insertTrackIntoPlaylist(keepId, playlistId, position.value(0).toInt());
++            }
++        }
++        duplicates.append(dupId);
++    }
++    purgeTracks(duplicates);
++    kLogger.info() << "push-hack: merged" << duplicates.size() << "duplicate imported tracks";
++}
++
+ QList<TrackId> TrackCollection::resolveTrackIds(
+         const QList<QUrl>& urls,
+         TrackDAO::ResolveTrackIdFlags flags) {
+diff -ruN a/src/library/trackcollection.h b/src/library/trackcollection.h
+--- a/src/library/trackcollection.h	2026-10-15 14:24:46
++++ b/src/library/trackcollection.h	2026-10-15 14:31:24
+@@ -31,6 +31,12 @@
+             const UserSettingsPointer& pConfig);
+     ~TrackCollection() override;
+ 
++    // push-hack: repoint single tracks (old -> new location), e.g. after
++    // mixxx-bridge copied them off a USB stick. like relocateDirectory but
++    // per file: pairs whose new file is missing, or already in the library,
++    // are skipped.
++    void relocateTracks(const QList<QPair<QString, QString>>& moves);
++
+     void repairDatabase(
+             const QSqlDatabase& database) override;
+ 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5.0" schemaVersion="1">
+  <info>
+    <name>Ableton Push 3 (standalone)</name>
+    <author>push-hack</author>
+    <description>Two decks on Push 3 running standalone, Push3 app stopped. Inputs are registered in Ableton-Push-3.js.</description>
+  </info>
+  <controller id="PUSH3">
+    <scriptfiles>
+      <file functionprefix="PUSH3" filename="Ableton-Push-3.js"/>
+    </scriptfiles>
+    <controls/>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>

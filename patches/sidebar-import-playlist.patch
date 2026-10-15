@@ -1,0 +1,71 @@
+diff -ru a/src/library/baseexternallibraryfeature.h b/src/library/baseexternallibraryfeature.h
+--- a/src/library/baseexternallibraryfeature.h	2026-10-15 13:11:08
++++ b/src/library/baseexternallibraryfeature.h	2026-10-15 13:11:28
+@@ -26,6 +26,13 @@
+     void onRightClick(const QPoint& globalPos) override;
+     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+ 
++    // push-hack: "Import as Playlist" without the right-click menu, for
++    // [Library],import_playlist (LibraryControl).
++    void importAsMixxxPlaylist(const QModelIndex& index) {
++        m_lastRightClickedIndex = index;
++        slotImportAsMixxxPlaylist();
++    }
++
+   protected:
+     // Must be re-implemented by external Libraries copied to Mixxx DB
+     virtual std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+diff -ru a/src/library/librarycontrol.cpp b/src/library/librarycontrol.cpp
+--- a/src/library/librarycontrol.cpp	2026-10-15 13:11:08
++++ b/src/library/librarycontrol.cpp	2026-10-15 13:11:28
+@@ -9,7 +9,9 @@
+ #include "control/controlencoder.h"
+ #include "control/controlobject.h"
+ #include "control/controlpushbutton.h"
++#include "library/baseexternallibraryfeature.h"
+ #include "library/library.h"
++#include "library/treeitem.h"
+ #include "library/libraryview.h"
+ #include "mixer/playermanager.h"
+ #include "moc_librarycontrol.cpp"
+@@ -385,6 +387,29 @@
+                 int iSteps = static_cast<int>(steps);
+                 if (iSteps) {
+                     m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
++                }
++            });
++    // push-hack: "Import as Playlist" on the selected sidebar item, so a
++    // controller can import a Rekordbox (or other external library) playlist
++    // without the right-click menu. Any other item: nothing happens.
++    m_pImportPlaylist = std::make_unique<ControlPushButton>(
++            ConfigKey("[Library]", "import_playlist"));
++    connect(m_pImportPlaylist.get(),
++            &ControlPushButton::valueChanged,
++            this,
++            [this](double value) {
++                if (value <= 0.0 || !m_pSidebarWidget) {
++                    return;
++                }
++                const QModelIndex index = m_pSidebarWidget->currentIndex();
++                // top-level items point at the model, children at a TreeItem
++                if (!index.isValid() || index.internalPointer() == index.model()) {
++                    return;
++                }
++                TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
++                auto* pFeature = qobject_cast<BaseExternalLibraryFeature*>(pTreeItem->feature());
++                if (pFeature) {
++                    pFeature->importAsMixxxPlaylist(index);
+                 }
+             });
+     m_pClearSearch = std::make_unique<ControlPushButton>(
+diff -ru a/src/library/librarycontrol.h b/src/library/librarycontrol.h
+--- a/src/library/librarycontrol.h	2026-10-15 13:11:08
++++ b/src/library/librarycontrol.h	2026-10-15 13:11:28
+@@ -174,6 +174,7 @@
+     std::unique_ptr<ControlPushButton> m_pSelectHistoryPrev;
+     std::unique_ptr<ControlEncoder> m_pSelectHistorySelect;
+     std::unique_ptr<ControlPushButton> m_pClearSearch;
++    std::unique_ptr<ControlPushButton> m_pImportPlaylist; // push-hack
+     std::unique_ptr<ControlPushButton> m_pDeleteSearchQuery;
+ 
+     // Font sizes

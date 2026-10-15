@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mixxx Mode</title>
+<style>
+  :root { --bg: #f6f6f4; --fg: #1a1a1a; --muted: #666; --card: #fff; --line: #ddd; --accent: #ff5500; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #111; --fg: #eee; --muted: #999; --card: #1b1b1b; --line: #333; } }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 480px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p { color: var(--muted); margin: 0 0 20px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .mode { font-size: 18px; margin-bottom: 16px; }
+  .mode b { color: var(--accent); }
+  button { width: 100%; padding: 14px; font-size: 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg); margin-top: 8px; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  .msg { margin-top: 12px; color: var(--muted); min-height: 1.5em; }
+  h2 { font-size: 18px; margin: 24px 0 8px; }
+  label { display: block; margin: 12px 0 4px; }
+  select { width: 100%; padding: 10px; font-size: 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--fg); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mixxx Mode</h1>
+  <p>Mixxx mode stops Push and Live while you DJ. On the Push, hold SETTINGS to come back.</p>
+  <div class="card">
+    <div class="mode">Now: <b id="mode">...</b></div>
+    <button id="toMixxx" class="primary">Switch to Mixxx</button>
+    <button id="toPush">Back to Push</button>
+    <div class="msg" id="msg"></div>
+  </div>
+  <h2>Audio</h2>
+  <div class="card">
+    <label for="buffer">Buffer size</label>
+    <select id="buffer">
+      <option value="64">64 frames (1.5 ms)</option>
+      <option value="128">128 frames (2.9 ms)</option>
+      <option value="256">256 frames (5.8 ms)</option>
+      <option value="512">512 frames (11.6 ms)</option>
+      <option value="1024">1024 frames (23.2 ms)</option>
+      <option value="2048">2048 frames (46.4 ms)</option>
+      <option value="4096">4096 frames (92.9 ms)</option>
+    </select>
+    <label for="master">Outputs</label>
+    <select id="master">
+      <option value="1/2">Master on 1/2, cue on headphones (3/4)</option>
+      <option value="3/4">Cue on 1/2, master on headphones (3/4)</option>
+    </select>
+    <button id="save">Save</button>
+    <div class="msg" id="audioMsg">Smaller buffers respond faster. If you hear clicks, pick a bigger one. Changes apply the next time Mixxx starts.</div>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const names = { push: "Push", mixxx: "Mixxx" };
+function show(mode) {
+  $("mode").textContent = names[mode] || mode;
+  $("toMixxx").disabled = mode === "mixxx";
+  $("toPush").disabled = mode === "push";
+}
+async function refresh() {
+  try { show((await (await fetch("/api/status")).json()).mode); } catch (e) {}
+}
+async function setMode(mode) {
+  $("toMixxx").disabled = $("toPush").disabled = true;
+  $("msg").textContent = mode === "mixxx" ? "Starting Mixxx. This takes about 10 seconds." : "Starting Push. This takes about 20 seconds.";
+  try {
+    const r = await fetch("/api/mode", { method: "POST", body: JSON.stringify({ mode }) });
+    if (!r.ok) throw new Error(await r.text());
+    show((await r.json()).mode);
+    $("msg").textContent = "";
+  } catch (e) {
+    $("msg").textContent = "Could not switch: " + e.message;
+    refresh();
+  }
+}
+async function loadAudio() {
+  try {
+    const a = await (await fetch("/api/settings")).json();
+    $("buffer").value = a.buffer;
+    $("master").value = a.master;
+  } catch (e) {}
+}
+$("save").onclick = async () => {
+  $("save").disabled = true;
+  try {
+    const r = await fetch("/api/settings", { method: "POST", body: JSON.stringify({ buffer: +$("buffer").value, master: $("master").value }) });
+    if (!r.ok) throw new Error(await r.text());
+    $("audioMsg").textContent = "Saved. Mixxx uses these settings the next time it starts.";
+  } catch (e) {
+    $("audioMsg").textContent = "Could not save: " + e.message;
+  }
+  $("save").disabled = false;
+};
+loadAudio();
+$("toMixxx").onclick = () => setMode("mixxx");
+$("toPush").onclick = () => setMode("push");
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE skin>
+<!--
+  PushHack: 960x160, the Push 3 screen. mixxx-bridge copies this window to
+  the Push. Row 1 = the 8 encoders and the 8 buttons above the screen (EQ, FX
+  GRID or GAIN, set by the Push mapping; sort columns while the library is open),
+  row 2 = decks (3 layouts) or library, row 3 = labels for the 8 buttons below the screen.
+-->
+<skin>
+  <manifest>
+    <title>PushHack</title>
+    <author>push-hack</author>
+    <version>0.2.0</version>
+    <description>Two or four decks sized for the Ableton Push 3 screen.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[App],num_decks">4</attribute>
+      <attribute config_key="[App],num_samplers">0</attribute>
+      <attribute config_key="[App],num_preview_decks">0</attribute>
+      <attribute config_key="[Skin],show_maximized_library">0</attribute>
+      <!-- set by Ableton-Push-3.js. ui_h: label row height in px, 0 = hidden
+           (waveforms take the space), animated up to 10. encoder_mode: 0 EQ, 1 FX, 2 GRID, 3 GAIN.
+           top_page: 0 EQ, 1 FX, 2 GRID, 3 sort (library open), 4 GAIN, 5 master volume.
+           master: deck 1-4. layout: 0 side by side, 1 top/bottom, 2 four decks.
+           left_page / right_page: 0 = deck 1 / 2, 1 = deck 3 / 4.
+           active1-4: 1 while the Push controls that deck -->
+      <attribute config_key="[PushHack],encoder_mode">0</attribute>
+      <attribute config_key="[PushHack],top_page">0</attribute>
+      <attribute config_key="[PushHack],master">1</attribute>
+      <attribute config_key="[PushHack],ui_h">0</attribute>
+      <attribute config_key="[PushHack],layout">1</attribute>
+      <attribute config_key="[PushHack],kb">0</attribute>
+      <attribute config_key="[PushHack],left_page">0</attribute>
+      <attribute config_key="[PushHack],right_page">0</attribute>
+      <attribute config_key="[PushHack],active1">1</attribute>
+      <attribute config_key="[PushHack],active2">1</attribute>
+      <attribute config_key="[PushHack],active3">0</attribute>
+      <attribute config_key="[PushHack],active4">0</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <Style src="skin:style.qss"/>
+  <Size>960f,160f</Size>
+  <MinimumSize>960,160</MinimumSize>
+  <MaximumSize>960,160</MaximumSize>
+  <Layout>vertical</Layout>
+
+  <Children>
+    <!-- encoders 1-8 / buttons above the screen: 1-4 deck 1, 5-8 deck 2 -->
+    <WidgetStack currentpage="[PushHack],top_page">
+      <ObjectName>EncBar</ObjectName>
+      <Size>960f,0f</Size>
+      <!-- height animated by Ableton-Push-3.js through [PushHack],ui_h (0-10) -->
+      <Connection><ConfigKey>[PushHack],ui_h</ConfigKey><BindProperty>minimumHeight</BindProperty></Connection>
+      <Connection><ConfigKey>[PushHack],ui_h</ConfigKey><BindProperty>maximumHeight</BindProperty></Connection>
+      <Children>
+        <WidgetGroup><Layout>horizontal</Layout><Size>960f,10f</Size><Children><WidgetStack currentpage="[PushHack],left_page"><Size>480f,10f</Size><Children><Template src="skin:eq_half.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:eq_half.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetStack><WidgetStack currentpage="[PushHack],right_page"><Size>480f,10f</Size><Children><Template src="skin:eq_half.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:eq_half.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetStack></Children></WidgetGroup>
+        <WidgetGroup><Layout>horizontal</Layout><Size>960f,10f</Size><Children><WidgetStack currentpage="[PushHack],left_page"><Size>480f,10f</Size><Children><Template src="skin:fx_half.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:fx_half.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetStack><WidgetStack currentpage="[PushHack],right_page"><Size>480f,10f</Size><Children><Template src="skin:fx_half.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:fx_half.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetStack></Children></WidgetGroup>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Size>960f,10f</Size>
+          <Children>
+            <Template src="skin:enc_text.xml"><SetVariable name="text">GRID</SetVariable></Template>
+            <Template src="skin:enc_text.xml"><SetVariable name="text">BPM</SetVariable></Template>
+            <Template src="skin:enc_text.xml"><SetVariable name="text">ZOOM</SetVariable></Template>
+            <Template src="skin:slot_blank.xml"/>
+            <Template src="skin:enc_text.xml"><SetVariable name="text">GRID</SetVariable></Template>
+            <Template src="skin:enc_text.xml"><SetVariable name="text">BPM</SetVariable></Template>
+            <Template src="skin:enc_text.xml"><SetVariable name="text">ZOOM</SetVariable></Template>
+            <Template src="skin:slot_blank.xml"/>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Size>960f,10f</Size>
+          <Children>
+            <Template src="skin:slot.xml"><SetVariable name="text">#</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">23</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">TITLE</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">2</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">ARTIST</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">1</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">BPM</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">15</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">KEY</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">20</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">TIME</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">13</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">ADDED</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">17</SetVariable></Template>
+            <Template src="skin:slot.xml"><SetVariable name="text">GENRE</SetVariable><SetVariable name="key">[Library],sort_column</SetVariable><SetVariable name="value">6</SetVariable></Template>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup><Layout>horizontal</Layout><Size>960f,10f</Size><Children><WidgetStack currentpage="[PushHack],left_page"><Size>480f,10f</Size><Children><Template src="skin:gain_half.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:gain_half.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetStack><WidgetStack currentpage="[PushHack],right_page"><Size>480f,10f</Size><Children><Template src="skin:gain_half.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:gain_half.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetStack></Children></WidgetGroup>
+        <!-- page 5: master volume ([Master],gain) after Main: the jog sets it, 0 dB at center -->
+        <WidgetGroup>
+          <Layout>horizontal</Layout>
+          <Size>960f,10f</Size>
+          <Children>
+            <Label><ObjectName>Enc</ObjectName><Size>120f,10f</Size><Text>MAIN VOLUME</Text><Alignment>center</Alignment></Label>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Size>720f,10f</Size>
+              <Children>
+                <WidgetGroup><Size>720f,4f</Size></WidgetGroup>
+                <SliderComposed>
+                  <ObjectName>EncBar</ObjectName>
+                  <Size>720f,2f</Size>
+                  <Horizontal>true</Horizontal>
+                  <Handle>skin:handle.svg</Handle>
+                  <BarColor>#FFFFFF</BarColor>
+                  <BarBgColor>#262626</BarBgColor>
+                  <BarWidth>2</BarWidth>
+                  <BarUnipolar>false</BarUnipolar>
+                  <BarAxisPos>0.5</BarAxisPos>
+                  <Connection><ConfigKey>[Master],gain</ConfigKey></Connection>
+                </SliderComposed>
+              </Children>
+            </WidgetGroup>
+            <NumberDb><ObjectName>Enc</ObjectName><Size>120f,10f</Size><NumberOfDigits>1</NumberOfDigits><Alignment>center</Alignment><Connection><ConfigKey>[Master],gain</ConfigKey></Connection></NumberDb>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </WidgetStack>
+
+    <WidgetStack currentpage="[Skin],show_maximized_library">
+      <ObjectName>Main</ObjectName>
+      <Size>960f,120me</Size>
+      <Children>
+        <!-- [PushHack],layout (Layout button): 0 side by side, 1 top/bottom
+             (waveforms meet in the middle so beats line up), 2 four decks.
+             left side = deck 1 or 3, right = 2 or 4 (Undo / Save). hidden
+             pages are not drawn, so the unused waveforms cost nothing. -->
+        <WidgetStack currentpage="[PushHack],layout">
+          <ObjectName>Decks</ObjectName>
+          <Size>960f,120me</Size>
+          <Children>
+            <WidgetGroup><Layout>horizontal</Layout><Size>960f,1me</Size><Children><WidgetStack currentpage="[PushHack],left_page"><Size>479f,1me</Size><Children><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info_half.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info_half.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetGroup></Children></WidgetStack><WidgetGroup><ObjectName>DeckGap</ObjectName><Size>2f,1me</Size></WidgetGroup><WidgetStack currentpage="[PushHack],right_page"><Size>479f,1me</Size><Children><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info_half.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info_half.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetGroup></Children></WidgetStack></Children></WidgetGroup>
+            <WidgetGroup><Layout>vertical</Layout><Size>960f,1me</Size><Children><WidgetStack currentpage="[PushHack],left_page"><Size>960f,1me</Size><Children><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetGroup></Children></WidgetStack><WidgetGroup><ObjectName>DeckGap</ObjectName><Size>1me,2f</Size></WidgetGroup><WidgetStack currentpage="[PushHack],right_page"><Size>960f,1me</Size><Children><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_wave.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_info.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_wave.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_overview.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_info.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetGroup></Children></WidgetStack></Children></WidgetGroup>
+            <WidgetGroup><Layout>vertical</Layout><Size>960f,1me</Size><Children><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">1</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetGroup><WidgetGroup><ObjectName>DeckGap</ObjectName><Size>1me,2f</Size></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">2</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetGroup><WidgetGroup><ObjectName>DeckGap</ObjectName><Size>1me,2f</Size></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">3</SetVariable><SetVariable name="color">#3E8EDE</SetVariable></Template></Children></WidgetGroup><WidgetGroup><ObjectName>DeckGap</ObjectName><Size>1me,2f</Size></WidgetGroup><WidgetGroup><Layout>vertical</Layout><Size>1me,1me</Size><Children><Template src="skin:deck_info.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template><Template src="skin:deck_wave.xml"><SetVariable name="i">4</SetVariable><SetVariable name="color">#FF7A1A</SetVariable></Template></Children></WidgetGroup></Children></WidgetGroup>
+          </Children>
+        </WidgetStack>
+
+        <WidgetGroup>
+          <ObjectName>LibraryPage</ObjectName>
+          <Layout>horizontal</Layout>
+          <Size>960f,120me</Size>
+          <Children>
+            <!-- search box above the tree: pads type into it (keyboard.go) -->
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Size>240f,100me</Size>
+              <Children>
+                <SearchBox>
+                  <Size>240f,18f</Size>
+                </SearchBox>
+                <LibrarySidebar>
+                  <Size>240f,80me</Size>
+                </LibrarySidebar>
+              </Children>
+            </WidgetGroup>
+            <Library>
+              <Size>720f,100me</Size>
+              <ShowButtonText>false</ShowButtonText>
+            </Library>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </WidgetStack>
+
+    <!-- buttons 1-8 below the screen -->
+    <WidgetGroup>
+      <ObjectName>BotBar</ObjectName>
+      <Layout>horizontal</Layout>
+      <Size>960f,0f</Size>
+      <!-- height animated by Ableton-Push-3.js through [PushHack],ui_h (0-10) -->
+      <Connection><ConfigKey>[PushHack],ui_h</ConfigKey><BindProperty>minimumHeight</BindProperty></Connection>
+      <Connection><ConfigKey>[PushHack],ui_h</ConfigKey><BindProperty>maximumHeight</BindProperty></Connection>
+      <Children>
+        <Template src="skin:slot.xml"><SetVariable name="text">SEARCH</SetVariable><SetVariable name="key">[PushHack],kb</SetVariable><SetVariable name="value">1</SetVariable></Template>
+        <Template src="skin:enc_text.xml"><SetVariable name="text">IMPORT</SetVariable></Template>
+        <Template src="skin:slot.xml"><SetVariable name="text">MASTER</SetVariable><SetVariable name="key">[PushHack],master</SetVariable><SetVariable name="value">-1</SetVariable></Template>
+        <Template src="skin:slot_blank.xml"/>
+        <Template src="skin:slot.xml"><SetVariable name="text">GAIN</SetVariable><SetVariable name="key">[PushHack],encoder_mode</SetVariable><SetVariable name="value">3</SetVariable></Template>
+        <Template src="skin:slot.xml"><SetVariable name="text">GRID</SetVariable><SetVariable name="key">[PushHack],encoder_mode</SetVariable><SetVariable name="value">2</SetVariable></Template>
+        <Template src="skin:slot.xml"><SetVariable name="text">EQ</SetVariable><SetVariable name="key">[PushHack],encoder_mode</SetVariable><SetVariable name="value">0</SetVariable></Template>
+        <Template src="skin:slot.xml"><SetVariable name="text">FX</SetVariable><SetVariable name="key">[PushHack],encoder_mode</SetVariable><SetVariable name="value">1</SetVariable></Template>
+      </Children>
+    </WidgetGroup>
+  </Children>
+</skin>

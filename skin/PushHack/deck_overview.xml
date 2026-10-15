@@ -1,0 +1,52 @@
+<!DOCTYPE template>
+<!-- one deck's whole-track overview, full width x 12. vars: i, color (play marker) -->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <Overview>
+    <Group><Variable name="group"/></Group>
+    <Size>1me,12f</Size>
+    <BgColor>#111111</BgColor>
+    <SignalColor>#1F5FFF</SignalColor>
+    <SignalHighColor>#FFFFFF</SignalHighColor>
+    <SignalMidColor>#FFA319</SignalMidColor>
+    <SignalLowColor>#1F5FFF</SignalLowColor>
+    <SignalRGBLowColor>#1F5FFF</SignalRGBLowColor>
+    <SignalRGBMidColor>#FFA319</SignalRGBMidColor>
+    <SignalRGBHighColor>#FFFFFF</SignalRGBHighColor>
+    <PlayedOverlayColor>#99000000</PlayedOverlayColor>
+    <PlayPosColor><Variable name="color"/></PlayPosColor>
+    <DefaultMark>
+      <Align>bottom</Align>
+      <Color>#FFC516</Color>
+      <TextColor>#000000</TextColor>
+      <Text></Text>
+    </DefaultMark>
+    <Mark>
+      <Control>loop_start_position</Control>
+      <Text></Text>
+      <Align>bottom</Align>
+      <Color>#FFA319</Color>
+      <TextColor>#000000</TextColor>
+    </Mark>
+    <Mark>
+      <Control>loop_end_position</Control>
+      <Text></Text>
+      <Align>bottom</Align>
+      <Color>#FFA319</Color>
+      <TextColor>#000000</TextColor>
+    </Mark>
+    <MarkRange>
+      <StartControl>loop_start_position</StartControl>
+      <EndControl>loop_end_position</EndControl>
+      <EnabledControl>loop_enabled</EnabledControl>
+      <Color>#FFA319</Color>
+      <Opacity>0.5</Opacity>
+      <DisabledColor>#666666</DisabledColor>
+      <DisabledOpacity>0.3</DisabledOpacity>
+    </MarkRange>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+    </Connection>
+  </Overview>
+</Template>

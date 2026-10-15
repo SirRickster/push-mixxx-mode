@@ -1,0 +1,14 @@
+<!DOCTYPE template>
+<!-- small status word, lit while key is on. vars: text, key, id (style.qss: #Flag<id>) -->
+<Template>
+  <Label>
+    <ObjectName>Flag<Variable name="id"/></ObjectName>
+    <Size>31f,12f</Size>
+    <Text><Variable name="text"/></Text>
+    <Alignment>center</Alignment>
+    <Connection>
+      <ConfigKey><Variable name="key"/></ConfigKey>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </Label>
+</Template>

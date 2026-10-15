@@ -1,0 +1,15 @@
+diff --git a/src/library/rekordbox/rekordboxfeature.cpp b/src/library/rekordbox/rekordboxfeature.cpp
+index 174cc59..8189546 100644
+--- a/src/library/rekordbox/rekordboxfeature.cpp
++++ b/src/library/rekordbox/rekordboxfeature.cpp
+@@ -1209,7 +1209,9 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
+             index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)
+                                .toString();
+ 
+-    if (!QFile(location).exists()) {
++    // getOrAddTrack() can fail even when the file exists; everything below
++    // dereferences track.
++    if (!track || !QFile(location).exists()) {
+         return track;
+     }
+ 

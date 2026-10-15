@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="12" preserveAspectRatio="none">
+  <!-- deck level, rekordbox colors: grows from the right, so green at the
+       right (low), yellow, red at the left (loud). dimmed so the title
+       stays readable on top -->
+  <defs>
+    <linearGradient id="g" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#1F7A2A"/>
+      <stop offset="0.6" stop-color="#1F7A2A"/>
+      <stop offset="0.75" stop-color="#8A7A12"/>
+      <stop offset="0.88" stop-color="#8A7A12"/>
+      <stop offset="0.95" stop-color="#9A2020"/>
+      <stop offset="1" stop-color="#9A2020"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="12" fill="url(#g)"/>
+</svg>

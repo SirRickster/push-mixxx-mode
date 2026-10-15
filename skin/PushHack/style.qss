@@ -1,0 +1,51 @@
+/* PushHack: black like the stock Push screen, Push orange for "on". */
+#Mixxx, QWidget {
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: "Liberation Sans";
+  font-size: 13px;
+}
+#Slot, #Enc { color: #777777; font-size: 9px; }
+#Slot[highlight="1"] { color: #FFFFFF; background-color: #2A2A2A; }
+#Enc { font-size: 9px; }
+#Title { font-size: 10px; font-weight: bold; padding-left: 4px; }
+/* title is drawn over the deck level (level.xml): no background of its own */
+#TitleArea, #TitleArea #Title, #Level, #LevelArea, #LevelArea WidgetGroup { background-color: transparent; }
+#Bpm, #Rate, #Time { font-size: 10px; }
+#Bpm { font-weight: bold; padding-left: 4px; }
+#DeckNum1, #DeckNum2, #DeckNum3, #DeckNum4 { font-size: 10px; font-weight: bold; color: #000000; }
+#DeckNum1, #DeckNum3 { background-color: #3E8EDE; }
+#DeckNum2, #DeckNum4 { background-color: #FF7A1A; }
+/* deck the Push is not controlling right now (4-deck layout) */
+#DeckNum1[highlight="0"], #DeckNum2[highlight="0"], #DeckNum3[highlight="0"], #DeckNum4[highlight="0"] { background-color: #333333; color: #888888; }
+#Rate, #Time { color: #BBBBBB; }
+#Flag, #FlagPlay, #FlagSync, #FlagQuantize, #FlagKey, #FlagLoop, #FlagCue { color: #3A3A3A; font-size: 9px; font-weight: bold; }
+#Flag[highlight="1"], #FlagPlay[highlight="1"], #FlagLoop[highlight="1"], #FlagCue[highlight="1"] { color: #FF5500; }
+/* same hues as the pad LEDs (Ableton-Push-3.js COL): dim off, bright on */
+#FlagSync { color: #4A0A0A; }
+#FlagSync[highlight="1"] { color: #FF2020; }
+#FlagQuantize { color: #14285A; }
+#FlagQuantize[highlight="1"] { color: #3C78FF; }
+#FlagKey { color: #2E1A5E; }
+#FlagKey[highlight="1"] { color: #A050FF; }
+#DeckGap { background-color: #222222; }
+
+WLibrarySidebar, WTrackTableView, QTreeView, QTableView {
+  background-color: #000000;
+  alternate-background-color: #0D0D0D;
+  color: #CCCCCC;
+  border: none;
+  font-size: 13px;
+  selection-background-color: #FF5500;
+  selection-color: #000000;
+}
+QHeaderView, QHeaderView::section {
+  background-color: #111111;
+  color: #777777;
+  border: none;
+  font-size: 11px;
+  height: 16px;
+}
+QScrollBar { width: 0px; height: 0px; }
+WSearchLineEdit { background-color: #1A1A1A; color: #FFFFFF; border: none; font-size: 12px; padding-left: 4px; }
+WSearchLineEdit:focus { background-color: #2A1A0A; }

@@ -1,0 +1,15 @@
+<!DOCTYPE template>
+<!-- 4 FX-mode encoder labels for one deck (effect unit = deck number),
+     480 x 10. vars: i (deck), color -->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Size>480f,10f</Size>
+    <Children>
+      <Template src="skin:enc_fx.xml"><SetVariable name="unit"><Variable name="i"/></SetVariable><SetVariable name="fx">1</SetVariable></Template>
+      <Template src="skin:enc_fx.xml"><SetVariable name="unit"><Variable name="i"/></SetVariable><SetVariable name="fx">2</SetVariable></Template>
+      <Template src="skin:enc_fx.xml"><SetVariable name="unit"><Variable name="i"/></SetVariable><SetVariable name="fx">3</SetVariable></Template>
+      <Template src="skin:enc.xml"><SetVariable name="text">FX MIX</SetVariable><SetVariable name="key">[EffectRack1_EffectUnit<Variable name="i"/>],mix</SetVariable><SetVariable name="unipolar">true</SetVariable><SetVariable name="axis">0</SetVariable></Template>
+    </Children>
+  </WidgetGroup>
+</Template>

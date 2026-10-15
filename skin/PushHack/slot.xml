@@ -1,0 +1,15 @@
+<!DOCTYPE template>
+<!-- one button label, 120 px = one button, lit while key == value. vars: text, key, value -->
+<Template>
+  <Label>
+    <ObjectName>Slot</ObjectName>
+    <Size>120f,10f</Size>
+    <Text><Variable name="text"/></Text>
+    <Alignment>center</Alignment>
+    <Connection>
+      <ConfigKey><Variable name="key"/></ConfigKey>
+      <Transform><IsEqual><Variable name="value"/></IsEqual></Transform>
+      <BindProperty>highlight</BindProperty>
+    </Connection>
+  </Label>
+</Template>

@@ -1,0 +1,33 @@
+<!DOCTYPE template>
+<!-- deck level behind the title: grows from the right edge (next to the
+     bpm) to the left, full level = whole title width, green / yellow / red
+     like rekordbox. a slider bar always grows from the left, so the colors
+     are the slider's background image (level_grad.svg) and a black bar
+     covers it from the left by 1 - level. the meter takes only the right
+     half of the title (a blank left half), so full level reaches its middle.
+     vars: group -->
+<Template>
+  <WidgetGroup>
+    <ObjectName>LevelArea</ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>1me,12f</Size>
+    <Children>
+  <WidgetGroup><Size>1me,12f</Size></WidgetGroup>
+  <SliderComposed>
+    <ObjectName>Level</ObjectName>
+    <Size>1me,12f</Size>
+    <Horizontal>true</Horizontal>
+    <Slider scalemode="STRETCH">skin:level_grad.svg</Slider>
+    <Handle>skin:blank.svg</Handle>
+    <BarColor>#000000</BarColor>
+    <BarWidth>12</BarWidth>
+    <BarAxisPos>6</BarAxisPos>
+    <BarUnipolar>true</BarUnipolar>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,vu_meter</ConfigKey>
+      <Transform><Invert/><Add>1</Add></Transform>
+    </Connection>
+  </SliderComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

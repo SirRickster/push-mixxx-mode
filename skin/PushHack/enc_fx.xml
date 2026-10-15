@@ -1,0 +1,23 @@
+<!DOCTYPE template>
+<!-- one FX encoder: loaded effect's name + meta knob bar, 120 px. vars: unit, fx, color -->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Size>120f,10f</Size>
+    <Children>
+      <EffectName>
+        <ObjectName>Enc</ObjectName>
+        <Size>120f,8f</Size>
+        <EffectRack>1</EffectRack>
+        <EffectUnit><Variable name="unit"/></EffectUnit>
+        <Effect><Variable name="fx"/></Effect>
+        <Alignment>center</Alignment>
+      </EffectName>
+      <Template src="skin:bar.xml">
+        <SetVariable name="key">[EffectRack1_EffectUnit<Variable name="unit"/>_Effect<Variable name="fx"/>],meta</SetVariable>
+        <SetVariable name="unipolar">true</SetVariable>
+        <SetVariable name="axis">0</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>
